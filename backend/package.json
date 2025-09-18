@@ -1,0 +1,15 @@
+{
+  "name": "my-express-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node src/app.js",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2"
+  }
+}
