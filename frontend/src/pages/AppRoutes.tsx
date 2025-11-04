@@ -7,6 +7,7 @@ import Settings from './Settings/Settings';
 import { useAuth } from '../auth';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
+import PasswordMgr from './PasswordManager/PasswordMgr';
 
 export default function AppRoutes() {
     const { isLoggedIn } = useAuth();
@@ -28,6 +29,8 @@ export default function AppRoutes() {
                 <Route path="/calendar" element={<Calendar />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/passwordmgr" element={<PasswordMgr />} />
+                <Route path="/calender" element={<Calendar />} />
                 <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
             <Footer />

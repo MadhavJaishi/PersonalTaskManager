@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import ReactModal from 'react-modal';
-
+// import './modalCss.css';
 interface ModalProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -15,21 +15,14 @@ const Modal = ({ isOpen, setIsOpen, customStyles, title, children }: ModalProps)
     }
 
     return (
-        <ReactModal
-            isOpen={isOpen}
-            onRequestClose={closeModal} // triggers on ESC key or outside click
-            shouldCloseOnOverlayClick={true} // optional (true by default)
+        <ReactModal isOpen={isOpen}
+            onRequestClose={closeModal}
+            shouldCloseOnOverlayClick={true}
             contentLabel="Example Modal"
             style={{ ...modalStyles, ...customStyles }}
         >
             <div>
-                <button onClick={closeModal} className="float-right text-gray-500 hover:text-gray-700">
-                    &times;
-                </button>
-                <h2 className="text-2xl font-bold mb-4">{title}</h2>
                 {children}
-
-
             </div>
         </ReactModal>
     );
@@ -39,6 +32,7 @@ const modalStyles: ReactModal.Styles = {
     overlay: {
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         zIndex: 1000,
+        transition: 'opacity 2s ease-in-out',
     },
     content: {
         top: '50%',
@@ -54,6 +48,7 @@ const modalStyles: ReactModal.Styles = {
         backgroundColor: '#fff',
         border: '1px solid #ccc',
         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+        transition: 'all 3s ease-in-out',
     },
 };
 

@@ -12,10 +12,7 @@ const Dashboard = () => {
                 <QuoteContainer />
                 <SearchBar />
                 <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-                    <div className="grid col-span-2">
-                        <Routine />
-                    </div>
-                    <div className="col-span-5">
+                    <div className="col-span-7">
                         <TaskList />
                     </div>
                     <div className="col-span-3">

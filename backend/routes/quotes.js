@@ -1,4 +1,3 @@
-import supabase from '../utils/supabase.js';
 import axios from 'axios';
 import express from 'express';
 const Router = express.Router();

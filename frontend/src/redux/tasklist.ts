@@ -4,7 +4,7 @@ import axios from 'axios';
 export const colorENUM = {
     "3": 'bg-gradient-to-b from-[#C6DEFC] to-[#DEBEEF]',
     "2": 'bg-gradient-to-t from-[#DED1C6] to-[#DEBEEF]',
-    "1": 'bg-gradient-to-b from-[#FADFD2] to-[#C6DECF]',
+    "1": 'bg-gradient-to-b from-[#FADFD2] to-[#C6DEEA]',
     "0": 'bg-gradient-to-t from-[#F2F3F4] to-[#DED1C6]',
 } as const;
 export interface Task {
@@ -12,8 +12,9 @@ export interface Task {
     title: string;
     description: string;
     targetDuration: number; // in seconds
+    timeSpent: number;
     notes: string;
-    priority: keyof typeof colorENUM;
+    priority: keyof typeof colorENUM | null;
 };
 
 export const fetchTaskList = createAsyncThunk<Task[]>(

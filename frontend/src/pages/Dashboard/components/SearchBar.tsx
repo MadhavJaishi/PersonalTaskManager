@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal";
-import AddTask from "./AddTask";
+import AddTaskOrPreset from "./AddTaskOrPreset";
 
 const SearchBar = () => {
     const [addTaskOpen, setAddTaskOpen] = useState(false);
@@ -16,7 +16,7 @@ const SearchBar = () => {
             </button>
 
 
-            {addTaskOpen && <Modal isOpen={addTaskOpen} setIsOpen={setAddTaskOpen} title={"Add Task"} ><AddTask setIsOpen={setAddTaskOpen} /> </Modal>}
+            {addTaskOpen && <Modal isOpen={addTaskOpen} setIsOpen={setAddTaskOpen} title={"Add Task"} ><AddTaskOrPreset setIsOpen={setAddTaskOpen} itemName="Task" /> </Modal>}
         </div>
     );
 };

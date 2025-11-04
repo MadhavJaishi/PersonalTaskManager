@@ -6,7 +6,7 @@ Router.post('/addTask', async (req, res) => {
     const { user_id, title, description, notes, targetDuration } = req.body;
     const { data, error } = await supabase
         .from('tasks')
-        .insert([{ user_id, title, description, notes, targetDuration }])
+        .insert([{ user_id, title, description, notes, targetDuration, timeSpent: 0 }])
         .select()
         .single();
     if (error) return res.status(400).json({ error: error.message });
