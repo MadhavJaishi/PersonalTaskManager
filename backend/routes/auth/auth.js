@@ -1,4 +1,4 @@
-import supabase from '../utils/supabase.js';
+import supabase from '../../utils/supabase.js';
 import express from 'express';
 const Router = express.Router();
 
