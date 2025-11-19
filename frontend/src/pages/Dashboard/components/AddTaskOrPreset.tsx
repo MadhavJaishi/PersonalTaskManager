@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addTaskAsync, Task } from "../../../redux/tasklist";
+import { addTaskAsync, Task } from "../redux/tasklist";
 import { AppDispatch } from "../../../redux/store";
 
 const AddTaskOrPreset = ({ setIsOpen, itemName }: { setIsOpen: (isOpen: boolean) => void; itemName: string; }) => {

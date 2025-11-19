@@ -1,5 +1,5 @@
 import { useDrag } from 'react-dnd';
-import { type Task } from '../../../redux/tasklist'
+import { type Task } from '../redux/tasklist'
 import { useRef, useState } from 'react';
 import Modal from '../../../components/Modal';
 import AddTaskOrPreset from './AddTaskOrPreset';

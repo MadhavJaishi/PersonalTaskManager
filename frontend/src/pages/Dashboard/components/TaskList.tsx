@@ -3,11 +3,13 @@ import PriorityTooltip from "./PriorityTooltip";
 import { useDrop } from 'react-dnd';
 import { useRef, useState } from 'react';
 import { ItemTypes } from './Presets';
-import { colorENUM, updateTask, type Task } from "../../../redux/tasklist";
+import { colorENUM, updateTask, type Task } from "../redux/tasklist";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../redux/store";
+import SearchBar from "./SearchBar";
 
 const temp: Task[] = [
+    // Read superbase connection and models and integrate with frontend
     { id: 1, title: "Clean the room and take out trash from dustbin", description: "Do sweeping, and clean the kitchen", targetDuration: 200, timeSpent: 200, notes: "", priority: "3" },
     { id: 2, title: "Take class of Cohort2.0", description: "Complete 2 videos", targetDuration: 3600, timeSpent: 200, notes: "I have read of typescript today", priority: "2" },
     { id: 3, title: "Grocery shopping", description: "Buy milk, eggs, and bread", targetDuration: 1800, timeSpent: 200, notes: "Check for discounts", priority: "1" },
@@ -46,8 +48,10 @@ const TaskList = () => {
     }
     return (
         <div className="text-black bg-white rounded-xl mx-auto p-4">
-            <div className="mb-4 flex flex-row gap-5 justify-between px-8">
+            <div className="mb-4 flex flex-row gap-5 justify-between align-middle px-8">
                 <h2 className="text-2xl font-semibold">Task List</h2>
+
+                <SearchBar />
 
                 <div>
                     <PriorityTooltip />
