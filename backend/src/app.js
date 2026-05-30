@@ -8,6 +8,7 @@ import credentialRouter from '../routes/passwordManager/credentials.js';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { authMiddleware } from '../routes/middlewares/authMiddleware.js';
 dotenv.config();
 
 const app = express()
@@ -16,6 +17,8 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use('/auth', authRouter);
+
+// app.use(authMiddleware);
 app.use('/tasks', taskRouter);
 app.use('/presets', presetRouter);
 app.use('/timelogs', timelogRouter);

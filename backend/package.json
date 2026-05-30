@@ -1,6 +1,7 @@
 {
   "name": "my-express-app",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "node src/app.js",
     "start": "node app.js"
@@ -9,7 +10,7 @@
     "@supabase/supabase-js": "^2.56.0",
     "axios": "^1.11.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
+    "dotenv": "^17.2.3",
     "express": "^4.21.2"
   }
 }

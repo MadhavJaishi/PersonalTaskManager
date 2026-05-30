@@ -1,5 +1,6 @@
 import supabase from '../../utils/supabase.js';
 import express from 'express';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 const Router = express.Router();
 
 Router.post('/addTask', async (req, res) => {

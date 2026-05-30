@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export const colorENUM = {
     "3": 'bg-gradient-to-b from-[#C6DEFC] to-[#DEBEEF]',
@@ -17,11 +18,11 @@ export interface Task {
     priority: keyof typeof colorENUM | null;
 };
 
-export const fetchTaskList = createAsyncThunk<Task[]>(
+export const fetchTaskList = createAsyncThunk<Task[], { userId: string }>(
     'tasklist/fetchTaskList',
-    async (_, thunkAPI) => {
+    async (payload, thunkAPI) => {
         try {
-            const response = await axios.get('/api/tasks');
+            const response = await axios.get(`${backendURL}/tasks/today/${payload.userId}`);
             const tasks = response.data;
             return tasks as Task[];
         } catch (error) {
@@ -34,7 +35,7 @@ export const addTaskAsync = createAsyncThunk<Task, Task>(
     'tasklist/addTask',
     async (taskData, thunkAPI) => {
         try {
-            const response = await axios.post('/api/tasks/add', taskData); // Cleaned up
+            const response = await axios.post(`${backendURL}/tasks/addTask`, taskData); // Cleaned up
 
             if (response.status !== 200) throw new Error('Failed to add task');
 
@@ -50,11 +51,7 @@ export const updateTask = createAsyncThunk<Task, Task>(
     'tasklist/updateTask',
     async (task, thunkAPI) => {
         try {
-            const response = await axios.put(`/api/tasks/${task.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(task),
-            });
+            const response = await axios.put(`${backendURL}/tasks/${task.id}`, task);
             if (response.status !== 200) throw new Error('Failed to update task');
             const updatedTask = response.data;
             return updatedTask as Task;
@@ -68,14 +65,10 @@ export const deleteTaskAsync = createAsyncThunk<number, number>(
     'tasklist/deleteTask',
     async (taskId, thunkAPI) => {
         try {
-            const response = await axios.delete(`/api/tasks/${taskId}`, {
-                method: 'DELETE',
-            });
-
+            const response = await axios.delete(`${backendURL}/tasks/${taskId}`);
             if (response.status !== 200) {
                 throw new Error('Failed to delete task');
             }
-
             return taskId; // Return the id of the deleted task
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to delete task');

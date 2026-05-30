@@ -12,6 +12,7 @@ const AddTaskOrPreset = ({ setIsOpen, itemName }: { setIsOpen: (isOpen: boolean)
         targetDuration: 0, // in seconds
         notes: "",
         priority: null,
+        timeSpent: 0
     }
     const [taskData, setTaskData] = useState<Task>(initialData);
     const handleChange = (name: string, value: string | number) => {

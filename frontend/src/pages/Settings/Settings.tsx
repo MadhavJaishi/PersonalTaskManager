@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Profile from './components/Profile';
+import { useAuth } from '../../auth';
 
 const profileData = {
     name: "Madhav",
@@ -25,6 +26,7 @@ const tasksOverview = [
 
 export default function Settings() {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const { logout } = useAuth();
 
     // Editing field tracker
     const [editingField, setEditingField] = useState<
@@ -53,7 +55,10 @@ export default function Settings() {
         setEditingField(null);
     };
 
-    const handleLogout = () => alert('Logged out!');
+    const handleLogout = () => {
+        alert('Logged out!');
+        logout();
+    };
 
     // Animations for editing panel
     const containerVariants = {
