@@ -12,9 +12,17 @@ import { useSelector } from "react-redux";
 const TaskList = () => {
     const ref = useRef<HTMLDivElement>(null);
     const taskList = useSelector((state: RootState) => state.tasklistSliceReducer.tasks)
-    const userId = useSelector((state: RootState) => state.userSliceReducer.id)
-    console.log("TAsklits", taskList)
+    const userId = useSelector((state: RootState) => state.userSliceReducer)
+    console.log("TAsklits", userId)
     const [idCnt, setIdCnt] = useState(16);
+    const [priorityFilter, setPriorityFilter] = useState("All");
+
+    const filteredTasks = taskList ? taskList.filter((item) => {
+        if (priorityFilter === "All") return true;
+        const match = priorityFilter.match(/P(\d)/);
+        const priorityNum = match ? match[1] : null;
+        return item.priority === priorityNum;
+    }) : [];
     const dispatch = useDispatch<AppDispatch>();
     const [, drop] = useDrop(() => ({
         accept: ItemTypes.PRESET,
@@ -34,19 +42,17 @@ const TaskList = () => {
         dispatch(deleteTaskAsync(taskId));
     }
     return (
-        <div className="text-black bg-white rounded-xl mx-auto p-4">
-            <div className="mb-4 flex flex-row gap-5 justify-between align-middle px-8">
-                <h2 className="text-2xl font-semibold">Task List</h2>
+        <div className="text-black rounded-xl mx-auto p-4">
+            <div className="mb-4 flex flex-row gap-5 justify-center items-center gap-10">
+                <h2 className="text-2xl font-semibold text-slate-800 whitespace-nowrap">Task List</h2>
 
                 <SearchBar />
 
-                <div>
-                    <PriorityTooltip />
-                </div>
+                <PriorityTooltip selected={priorityFilter} onChange={setPriorityFilter} />
             </div>
 
-            <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-2xl h-auto min-h-[480px] scrollbar-hide">
-                {taskList && taskList.map((item) => (
+            <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 rounded-2xl h-auto min-h-[480px] scrollbar-hide">
+                {filteredTasks && filteredTasks.map((item) => (
                     <div
                         key={item.id}
                         className={`

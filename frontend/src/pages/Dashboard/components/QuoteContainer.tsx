@@ -12,19 +12,14 @@ const QuoteContainer = () => {
     const fetchQuote = async () => {
       try {
         const response = await api.get(
-          'http://localhost:8000/quotes/quoteOfTheDay',
+          'http://localhost:5432/quotes/quoteOfTheDay',
         )
-        console.log('Data', response.data.quote)
         setQuote(response.data.quote)
       } catch (error) {
         console.error('Error fetching quote:', error)
       }
     }
     fetchQuote()
-  }, [])
-
-  useEffect(() => {
-    console.log('Quote updated:', quote)
   }, [])
 
   return (

@@ -5,16 +5,19 @@ import AddTaskOrPreset from "./AddTaskOrPreset";
 const SearchBar = () => {
     const [addTaskOpen, setAddTaskOpen] = useState(false);
     return (
-        <div className="w-full md:w-3/6 mx-auto flex items-center gap-2 p-2 rounded-2xl bg-white border border-gray-300 shadow-sm">
+        <div className="w-full max-w-3xl mx-auto flex items-center bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden">
             <input
                 type="text"
-                placeholder="Hello World, Check this out !!"
-                className="flex-grow px-4 py-2 rounded-xl focus:outline-none"
+                placeholder="What needs to be done?"
+                className="flex-1 px-5 py-1 text-gray-700 outline-none"
             />
-            <button onClick={() => setAddTaskOpen(true)} className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-semibold rounded-3xl">
+
+            <button
+                onClick={() => setAddTaskOpen(true)}
+                className="m-2 px-5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition"
+            >
                 Add Task
             </button>
-
 
             {addTaskOpen && <Modal isOpen={addTaskOpen} setIsOpen={setAddTaskOpen} title={"Add Task"} ><AddTaskOrPreset setIsOpen={setAddTaskOpen} itemName="Task" /> </Modal>}
         </div>

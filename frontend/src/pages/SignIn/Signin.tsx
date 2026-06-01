@@ -50,6 +50,8 @@ const SignIn = () => {
       const response = await api.get(`${backendURL}/auth/me`, {
         withCredentials: true,
       })
+      console.log("jhsbkdv", response)
+      localStorage.setItem("user", JSON.stringify(response.data.user))
       // Store user data to redux
       dispatch(setUser(response.data.user))
       login()
@@ -81,11 +83,10 @@ const SignIn = () => {
 
           <div className="flex items-center justify-center mb-8">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                step === 'request'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-green-600 text-white'
-              }`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${step === 'request'
+                ? 'bg-blue-600 text-white'
+                : 'bg-green-600 text-white'
+                }`}
             >
               1
             </div>
@@ -93,11 +94,10 @@ const SignIn = () => {
             <div className="w-12 h-px bg-slate-700" />
 
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                step === 'verify'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-700 text-slate-400'
-              }`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${step === 'verify'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-700 text-slate-400'
+                }`}
             >
               2
             </div>
