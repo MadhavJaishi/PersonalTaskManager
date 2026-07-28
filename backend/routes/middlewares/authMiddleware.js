@@ -1,23 +1,28 @@
 import supabase from "../../utils/supabase.js";
 
 export async function authMiddleware(req, res, next) {
-    const access = req.cookies.sb_access;
-    const refresh = req.cookies.sb_refresh;
+    let access = req.cookies?.sb_access;
+    let refresh = req.cookies?.sb_refresh;
 
-    if (!access && !refresh) {
-        return res.status(401).json({ error: "Not Authencated" });
+    if (!access && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+        access = req.headers.authorization.split(" ")[1];
     }
 
-    const { data: accessData } = await supabase.auth.getUser(access);
+    if (!access && !refresh) {
+        return res.status(401).json({ error: "Not Authenticated" });
+    }
 
-    if (accessData?.user) {
-        req.user = accessData.user;
-        return next();
+    if (access) {
+        const { data: accessData } = await supabase.auth.getUser(access);
+        if (accessData?.user) {
+            req.user = accessData.user;
+            return next();
+        }
     }
 
     if (refresh) {
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({ refresh_token: refresh });
-        if (refreshError) {
+        if (refreshError || !refreshData?.session) {
             return res.status(401).json({ error: "Session Expired" });
         }
 
@@ -25,18 +30,18 @@ export async function authMiddleware(req, res, next) {
 
         res.cookie("sb_access", newSession.access_token, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: "lax",
             maxAge: 1000 * 60 * 60 * 4,
-        })
+        });
         res.cookie("sb_refresh", newSession.refresh_token, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: "lax",
             maxAge: 1000 * 60 * 60 * 24 * 30,
-        })
-        req.user = refreshData.session.user;
+        });
+        req.user = newSession.user;
         return next();
     }
-    return res.status(401).json({ error: "Not Authenticated" })
+    return res.status(401).json({ error: "Not Authenticated" });
 }

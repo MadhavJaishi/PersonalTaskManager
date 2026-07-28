@@ -5,14 +5,11 @@ const Router = express.Router()
 // Step 1: Send OTP (login or signup depending on shouldCreateUser)
 Router.post('/send-otp', async (req, res) => {
   const { email } = req.body
-  console.log('email 0', email)
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: { shouldCreateUser: true },
   })
-  console.log('email - 1', data, error)
   if (error) return res.status(400).json({ error: error.message })
-  console.log('email 1', email)
   res.json({ ok: true })
 })
 

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import DndProviderWrapper from './components/DndProviderWrapper';
 import QuoteContainer from "./components/QuoteContainer"
 import TaskList from "./components/TaskList"
 import { useDispatch } from 'react-redux';
@@ -8,23 +7,24 @@ import { setUser } from '../../redux/userSlice';
 
 const Dashboard = () => {
     const dispatch = useDispatch<AppDispatch>();
+
     useEffect(() => {
-        const user = localStorage.getItem("user");
-        if (user) {
-            dispatch(setUser(JSON.parse(user)));
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                dispatch(setUser(JSON.parse(storedUser)));
+            } catch (e) {
+                console.error("Failed to parse stored user", e);
+            }
         }
-    }, [])
-    return <>
-        <DndProviderWrapper>
-            <div className="mx-auto p-4 flex flex-col gap-6 mb-20">
-                <QuoteContainer />
+    }, [dispatch]);
 
-                {/* <div className=""> */}
-                <TaskList />
-                {/* </div> */}
-            </div>
-        </DndProviderWrapper>
-    </>
-}
+    return (
+        <div className="mx-auto p-4 flex flex-col gap-6 mb-20 max-w-7xl">
+            <QuoteContainer />
+            <TaskList />
+        </div>
+    );
+};
 
-export default Dashboard
+export default Dashboard;

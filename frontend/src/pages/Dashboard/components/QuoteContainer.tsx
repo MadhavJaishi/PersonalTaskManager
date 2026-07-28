@@ -1,45 +1,61 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { api } from '../../../api-config/api'
 
-interface quoteType {
+interface QuoteType {
   quote: string
   author: string
 }
+
 const QuoteContainer = () => {
-  const [quote, setQuote] = useState<quoteType | null>(null)
+  const [quote, setQuote] = useState<QuoteType | null>(null)
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const response = await api.get(
-          'http://localhost:5432/quotes/quoteOfTheDay',
-        )
-        setQuote(response.data.quote)
+        const response = await api.get('/quotes/quoteOfTheDay')
+        if (response.data?.quote) {
+          setQuote(response.data.quote)
+        }
       } catch (error) {
-        console.error('Error fetching quote:', error)
+        console.error('Error fetching quote of the day:', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchQuote()
   }, [])
 
   return (
-    <div className="flex flex-row gap-4 px-2 py-4 md:w-200 rounded-2xl shadow max-w-2xl mx-auto">
-      <div className="text-xl w-40 font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-500 to-orange-500">
-        <h1 className="flex text-wrap">
-          Quote of <br /> the day
-        </h1>
+    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6 max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-6">
+      <div className="shrink-0 text-center sm:text-left border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-6">
+        <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+          Daily Motivation
+        </span>
+        <h2 className="text-lg font-bold text-slate-800 mt-2">
+          Quote of the Day
+        </h2>
       </div>
-      <h1 className="font-3xl text-transparent bg-clip-text bg-amber-900">
-        {' '}
-        ::{' '}
-      </h1>
-      <div className="">
-        <blockquote className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">
-          “{quote?.quote}”
-        </blockquote>
-        <footer className="mt-1 text-right text-md font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">
-          — {quote?.author}
-        </footer>
+
+      <div className="flex-1 text-center sm:text-left">
+        {loading ? (
+          <div className="h-12 flex items-center justify-center sm:justify-start text-slate-400 text-sm italic">
+            Loading quote...
+          </div>
+        ) : quote ? (
+          <figure>
+            <blockquote className="text-base sm:text-lg font-medium text-slate-700 italic">
+              “{quote.quote}”
+            </blockquote>
+            <figcaption className="mt-2 text-sm font-semibold text-blue-600">
+              — {quote.author || 'Unknown'}
+            </figcaption>
+          </figure>
+        ) : (
+          <p className="text-slate-500 italic text-sm">
+            “Success is the sum of small efforts, repeated day in and day out.”
+          </p>
+        )}
       </div>
     </div>
   )

@@ -1,50 +1,49 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { api } from '../../../api-config/api'
-const backendURL = import.meta.env.VITE_BACKEND_URL
 
 export const colorENUM = {
-  '3': 'bg-gradient-to-b from-[#C6DEFC] to-[#DEBEEF]',
-  '2': 'bg-gradient-to-t from-[#DED1C6] to-[#DEBEEF]',
-  '1': 'bg-gradient-to-b from-[#FADFD2] to-[#C6DEEA]',
-  '0': 'bg-gradient-to-t from-[#F2F3F4] to-[#DED1C6]',
+  '3': 'bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-red-500/15 border-rose-200 hover:border-rose-300',
+  '2': 'bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/15 border-amber-200 hover:border-amber-300',
+  '1': 'bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-sky-500/15 border-blue-200 hover:border-blue-300',
+  '0': 'bg-gradient-to-br from-slate-500/10 via-gray-500/10 to-zinc-500/15 border-slate-200 hover:border-slate-300',
 } as const
+
 export interface Task {
-  id: number
+  id: number | string
+  user_id?: string
   title: string
   description: string
   targetDuration: number // in seconds
-  timeSpent: number
-  notes: string
-  priority: keyof typeof colorENUM | null
+  timeSpent: number // in seconds
+  notes?: string
+  priority: string | null
+  is_completed?: boolean
+  category?: string
+  due_date?: string
+  created_at?: string
 }
 
-export const fetchTaskList = createAsyncThunk<Task[], { userId: string }>(
+export const fetchTaskList = createAsyncThunk<Task[], { userId?: string } | undefined>(
   'tasklist/fetchTaskList',
   async (payload, thunkAPI) => {
     try {
-      const response = await api.get(
-        `${backendURL}/tasks/today/${payload.userId}`,
-      )
-      const tasks = response.data
-      return tasks as Task[]
-    } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to fetch tasks')
+      const url = payload?.userId ? `/tasks/${payload.userId}` : '/tasks'
+      const response = await api.get(url)
+      return (Array.isArray(response.data) ? response.data : response.data.tasks || []) as Task[]
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.error || 'Failed to fetch tasks')
     }
   },
 )
 
-export const addTaskAsync = createAsyncThunk<Task, Task>(
+export const addTaskAsync = createAsyncThunk<Task, Partial<Task>>(
   'tasklist/addTask',
   async (taskData, thunkAPI) => {
     try {
-      const response = await api.post(`${backendURL}/tasks/addTask`, taskData) // Cleaned up
-
-      if (response.status !== 200) throw new Error('Failed to add task')
-
-      return response.data as Task
-    } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to add task')
+      const response = await api.post('/tasks/addTask', taskData)
+      return (response.data.task || response.data) as Task
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.error || 'Failed to add task')
     }
   },
 )
@@ -53,27 +52,34 @@ export const updateTask = createAsyncThunk<Task, Task>(
   'tasklist/updateTask',
   async (task, thunkAPI) => {
     try {
-      const response = await api.put(`${backendURL}/tasks/${task.id}`, task)
-      if (response.status !== 200) throw new Error('Failed to update task')
-      const updatedTask = response.data
-      return updatedTask as Task
-    } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to update task')
+      const response = await api.put(`/tasks/${task.id}`, task)
+      return (response.data.task || response.data) as Task
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.error || 'Failed to update task')
     }
   },
 )
 
-export const deleteTaskAsync = createAsyncThunk<number, number>(
+export const toggleTaskAsync = createAsyncThunk<Task, number | string>(
+  'tasklist/toggleTask',
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await api.patch(`/tasks/${taskId}/toggle`)
+      return (response.data.task || response.data) as Task
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.error || 'Failed to toggle task completion')
+    }
+  },
+)
+
+export const deleteTaskAsync = createAsyncThunk<number | string, number | string>(
   'tasklist/deleteTask',
   async (taskId, thunkAPI) => {
     try {
-      const response = await api.delete(`${backendURL}/tasks/${taskId}`)
-      if (response.status !== 200) {
-        throw new Error('Failed to delete task')
-      }
-      return taskId // Return the id of the deleted task
-    } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to delete task')
+      await api.delete(`/tasks/${taskId}`)
+      return taskId
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.error || 'Failed to delete task')
     }
   },
 )
@@ -94,7 +100,9 @@ const tasklistSlice = createSlice({
   name: 'tasklist',
   initialState,
   reducers: {
-    // You can keep synchronous reducers if needed, otherwise remove
+    clearTaskError: (state) => {
+      state.error = null
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -119,7 +127,7 @@ const tasklistSlice = createSlice({
       })
       .addCase(addTaskAsync.fulfilled, (state, action) => {
         state.loading = false
-        state.tasks.push(action.payload)
+        state.tasks.unshift(action.payload)
       })
       .addCase(addTaskAsync.rejected, (state, action) => {
         state.loading = false
@@ -127,30 +135,28 @@ const tasklistSlice = createSlice({
       })
 
       // Update task
-      .addCase(updateTask.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
       .addCase(updateTask.fulfilled, (state, action) => {
-        state.loading = false
-        const index = state.tasks.findIndex((t) => t.id === action.payload.id)
+        const index = state.tasks.findIndex((t) => String(t.id) === String(action.payload.id))
         if (index !== -1) {
           state.tasks[index] = action.payload
         }
       })
       .addCase(updateTask.rejected, (state, action) => {
-        state.loading = false
         state.error = (action.payload as string) || 'Failed to update task'
       })
 
-      // Delete task
-      .addCase(deleteTaskAsync.pending, (state) => {
-        state.loading = true
-        state.error = null
+      // Toggle task completion
+      .addCase(toggleTaskAsync.fulfilled, (state, action) => {
+        const index = state.tasks.findIndex((t) => String(t.id) === String(action.payload.id))
+        if (index !== -1) {
+          state.tasks[index] = action.payload
+        }
       })
+
+      // Delete task
       .addCase(deleteTaskAsync.fulfilled, (state, action) => {
         state.loading = false
-        state.tasks = state.tasks.filter((task) => task.id !== action.payload)
+        state.tasks = state.tasks.filter((task) => String(task.id) !== String(action.payload))
       })
       .addCase(deleteTaskAsync.rejected, (state, action) => {
         state.loading = false
@@ -159,4 +165,5 @@ const tasklistSlice = createSlice({
   },
 })
 
+export const { clearTaskError } = tasklistSlice.actions
 export default tasklistSlice.reducer

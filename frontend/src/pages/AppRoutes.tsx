@@ -16,23 +16,25 @@ export default function AppRoutes() {
         return (
             <Routes>
                 <Route path="/login" element={<Signin />} />
-                <Route path="*" element={<Navigate to="/login" />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         );
     }
 
     return (
-        <div className='bg-[#F9FAFB] min-h-screen'>
-            <NavBar />
-            <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/calendar" element={<Calendar />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/passwordmgr" element={<PasswordMgr />} />
-                <Route path="/calender" element={<Calendar />} />
-                <Route path="*" element={<Navigate to="/dashboard" />} />
-            </Routes>
+        <div className="bg-[#F9FAFB] min-h-screen flex flex-col justify-between">
+            <div>
+                <NavBar />
+                <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/calender" element={<Navigate to="/calendar" replace />} />
+                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/passwordmgr" element={<PasswordMgr />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+            </div>
             <Footer />
         </div>
     );
