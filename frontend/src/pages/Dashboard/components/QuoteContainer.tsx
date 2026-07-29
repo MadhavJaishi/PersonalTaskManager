@@ -27,8 +27,8 @@ const QuoteContainer = () => {
   }, [])
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6 max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-6">
-      <div className="shrink-0 text-center sm:text-left border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-6">
+    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5 w-full h-full flex flex-col items-center gap-4 sm:gap-6 justify-center">
+      <div className="shrink-0 text-left border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-6">
         <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
           Daily Motivation
         </span>

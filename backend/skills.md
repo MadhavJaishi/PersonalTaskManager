@@ -2,10 +2,11 @@
 
 ## 1. Backend Architecture & Technologies
 - **Runtime Environment**: Node.js with native ES Modules (`"type": "module"` in `package.json`).
+- **Dev Runner**: Nodemon (`nodemon src/app.js` via `npm run dev`).
 - **Server Framework**: Express.js (`express` v4.21).
 - **Database & Auth SDK**: Supabase JavaScript Client (`@supabase/supabase-js` v2.56).
 - **Environment & Utilities**: `dotenv`, `cors`, `cookie-parser`, `axios`.
-- **Listening Port**: `5432` (configured via `process.env.PORT` or `.env`).
+- **Listening Port**: `5001` (configured via `process.env.PORT` or `.env`).
 
 ---
 

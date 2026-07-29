@@ -55,7 +55,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ setIsOpen, taskToEdit, onSa
             }
             setIsOpen(false);
         } catch (err: any) {
-            setErrorMsg(err?.message || 'Failed to save task.');
+            const msg = typeof err === 'string' ? err : err?.message || 'Failed to save task.';
+            setErrorMsg(msg);
         }
     };
 

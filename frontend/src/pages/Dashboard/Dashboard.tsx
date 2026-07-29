@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import QuoteContainer from "./components/QuoteContainer"
-import TaskList from "./components/TaskList"
+import SummaryDashboard from "./components/SummaryDashboard";
+import QuoteContainer from "./components/QuoteContainer";
+import TaskList from "./components/TaskList";
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../redux/store';
 import { setUser } from '../../redux/userSlice';
@@ -20,8 +21,16 @@ const Dashboard = () => {
     }, [dispatch]);
 
     return (
-        <div className="mx-auto p-4 flex flex-col gap-6 mb-20 max-w-7xl">
-            <QuoteContainer />
+        <div className="mx-auto flex flex-col gap-2 mb-20 max-w-6xl w-full">
+            {/* Top Row: Summary Dashboard (Left) & Quote Container (Right) */}
+            <div className="p-4 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                    <SummaryDashboard />
+                    <QuoteContainer />
+                </div>
+            </div>
+
+            {/* Task List */}
             <TaskList />
         </div>
     );

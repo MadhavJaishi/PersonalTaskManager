@@ -15,7 +15,7 @@ Router.post('/send-otp', async (req, res) => {
 
 // Step 2: Verify OTP and forward session
 Router.post('/verify-otp', async (req, res) => {
-  const { email, otptoken } = req.body
+  const { email, otptoken, username } = req.body
 
   const { data, error } = await supabase.auth.verifyOtp({
     email,
@@ -29,10 +29,28 @@ Router.post('/verify-otp', async (req, res) => {
 
   const { session, user } = data
 
-  await supabase.from('users').upsert({
+  const userPayload = {
     user_id: user.id,
     email,
-  })
+  }
+  if (username && username.trim()) {
+    userPayload.username = username.trim()
+  }
+
+  await supabase.from('users').upsert(userPayload, { onConflict: 'user_id' })
+
+  // Retrieve stored user record from 'users' table to ensure username is returned
+  const { data: dbUser } = await supabase
+    .from('users')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
+
+  const finalUser = {
+    id: user.id,
+    email: user.email || email,
+    username: dbUser?.username || username?.trim() || email.split('@')[0],
+  }
 
   res.cookie('sb_access', session.access_token, {
     httpOnly: true,
@@ -50,7 +68,7 @@ Router.post('/verify-otp', async (req, res) => {
 
   return res.json({
     ok: true,
-    user,
+    user: finalUser,
   })
 })
 
@@ -64,7 +82,19 @@ Router.get('/me', async (req, res) => {
   const { data: accessData } = await supabase.auth.getUser(access)
 
   if (accessData?.user) {
-    return res.json({ user: accessData?.user })
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', accessData.user.id)
+      .single()
+
+    return res.json({
+      user: {
+        id: accessData.user.id,
+        email: accessData.user.email,
+        username: dbUser?.username || accessData.user.email?.split('@')[0],
+      },
+    })
   }
 
   if (refresh) {
@@ -75,19 +105,19 @@ Router.get('/me', async (req, res) => {
     }
     const newSession = refreshData.session
 
-    // res.cookie('sb_access', refreshData.access_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'lax',
-    //   maxAge: 1000 * 60 * 60 * 4,
-    // })
-    // res.cookie('sb_refresh', refreshData.refresh_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'lax',
-    //   maxAge: 1000 * 60 * 60 * 24 * 30,
-    // })
-    return res.json({ user: newSession.user })
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', newSession.user.id)
+      .single()
+
+    return res.json({
+      user: {
+        id: newSession.user.id,
+        email: newSession.user.email,
+        username: dbUser?.username || newSession.user.email?.split('@')[0],
+      },
+    })
   }
   return res.status(401).json({ error: 'Not Authenticated' })
 })

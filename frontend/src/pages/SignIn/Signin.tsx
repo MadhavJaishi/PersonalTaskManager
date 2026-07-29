@@ -10,6 +10,7 @@ const SignIn = () => {
   const { isLoggedIn, login } = useAuth()
   const [step, setStep] = useState<'request' | 'verify'>('request')
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     otptoken: '',
   })
@@ -24,6 +25,10 @@ const SignIn = () => {
 
   const requestOtp = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.username || !formData.username.trim()) {
+      setError('Please enter your username.')
+      return
+    }
     if (!formData.email || !formData.email.trim()) {
       setError('Please enter a valid email address.')
       return
@@ -54,13 +59,16 @@ const SignIn = () => {
     setLoading(true)
     setError(null)
     try {
-      await api.post('/auth/verify-otp', {
+      const verifyRes = await api.post('/auth/verify-otp', {
         email: formData.email.trim(),
         otptoken: formData.otptoken.trim(),
+        username: formData.username.trim(),
       })
 
-      const response = await api.get('/auth/me')
-      const userObj = response.data?.user || { email: formData.email, username: formData.email.split('@')[0] }
+      const userObj = verifyRes.data?.user || {
+        email: formData.email.trim(),
+        username: formData.username.trim(),
+      }
 
       localStorage.setItem('user', JSON.stringify(userObj))
       dispatch(setUser(userObj))
@@ -126,6 +134,22 @@ const SignIn = () => {
           >
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                Username
+              </label>
+
+              <input
+                type="text"
+                required
+                value={formData.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                disabled={step === 'verify'}
+                placeholder="e.g. Madhav"
+                className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
                 Email Address
               </label>
 
@@ -182,7 +206,7 @@ const SignIn = () => {
                 onClick={() => setStep('request')}
                 className="w-full text-slate-400 hover:text-white text-xs text-center py-1 transition cursor-pointer"
               >
-                Change Email / Resend Code
+                Change Details / Resend Code
               </button>
             )}
           </form>

@@ -148,7 +148,7 @@ const Analytics = () => {
                     </div>
 
                     {/* Time Analysis Card */}
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-20">
                         <h2 className="text-lg font-bold text-slate-800 mb-4">Time Efficiency Breakdown</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                             <div>
